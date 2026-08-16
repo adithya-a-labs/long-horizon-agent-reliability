@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/long-horizon-agent-reliability/epistemic-state.schema.json",
+  "title": "Proposed Epistemic State Record",
+  "description": "Research schema proposal; not a stable implementation contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state_id",
+    "version",
+    "role",
+    "status",
+    "claim",
+    "scope",
+    "provenance",
+    "authority",
+    "dependencies",
+    "created_at"
+  ],
+  "properties": {
+    "state_id": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "role": {
+      "type": "string",
+      "enum": ["planned", "believed", "observed"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["unverified", "verified", "stale", "invalidated"]
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "predicate", "value"],
+      "properties": {
+        "subject": { "type": "string" },
+        "predicate": { "type": "string" },
+        "value": {}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "goal_id": { "type": ["string", "null"] },
+        "environment_id": { "type": ["string", "null"] },
+        "resource_id": { "type": ["string", "null"] },
+        "tool_version": { "type": ["string", "null"] }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin_event_id", "source_type"],
+      "properties": {
+        "origin_event_id": { "type": "string" },
+        "source_type": {
+          "type": "string",
+          "enum": ["model", "tool", "environment", "human", "policy", "verifier"]
+        },
+        "source_id": { "type": ["string", "null"] },
+        "raw_evidence_ref": { "type": ["string", "null"] }
+      }
+    },
+    "verification": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["verifier_id", "method", "verified_at"],
+      "properties": {
+        "verifier_id": { "type": "string" },
+        "method": { "type": "string" },
+        "verified_at": { "type": "string", "format": "date-time" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "permitted_uses"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["none", "inquiry", "planning", "protected_action_precondition"]
+        },
+        "permitted_uses": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state_id", "relation"],
+        "properties": {
+          "state_id": { "type": "string" },
+          "relation": {
+            "type": "string",
+            "enum": ["derived_from", "planned_from", "parameterized_by", "authorized_by", "verified_by", "implements", "requires_version"]
+          }
+        }
+      }
+    },
+    "observed_at": { "type": ["string", "null"], "format": "date-time" },
+    "expires_at": { "type": ["string", "null"], "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "supersedes": { "type": ["string", "null"] },
+    "transition_reason": { "type": ["string", "null"] }
+  }
+}
